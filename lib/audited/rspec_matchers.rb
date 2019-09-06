@@ -73,14 +73,14 @@ module Audited
         "Did not expect #{@expectation}"
       end
 
-      alias_method :failure_message_when_negated, :negative_failure_message
+      alias failure_message_when_negated negative_failure_message
 
       def description
         description = "audited"
         description += " associated with #{@options[:associated_with]}" if @options.key?(:associated_with)
-        description += " only => #{@options[:only].join ', '}"          if @options.key?(:only)
-        description += " except => #{@options[:except].join(', ')}"     if @options.key?(:except)
-        description += " requires audit_comment"                        if @options.key?(:comment_required)
+        description += " only => #{@options[:only].join ", "}" if @options.key?(:only)
+        description += " except => #{@options[:except].join(", ")}" if @options.key?(:except)
+        description += " requires audit_comment" if @options.key?(:comment_required)
 
         description
       end
@@ -121,11 +121,11 @@ module Audited
         {
           create: [:after, :audit_create],
           update: [:before, :audit_update],
-          destroy: [:before, :audit_destroy]
-        }.map do |(action, kind_callback)|
+          destroy: [:before, :audit_destroy],
+        }.map { |(action, kind_callback)|
           kind, callback = kind_callback
           callbacks_for(action, kind: kind).include?(callback) if @options[:on].include?(action)
-        end.compact.all?
+        }.compact.all?
       end
 
       def validate_callbacks_include_presence_of_comment?
@@ -149,11 +149,11 @@ module Audited
       end
 
       def requires_comment_before_callbacks?
-        [:create, :update, :destroy].map do |action|
+        [:create, :update, :destroy].map { |action|
           if @options[:comment_required] && model_class.audited_options[:on].include?(action)
             callbacks_for(action).include?(:require_comment)
           end
-        end.compact.all?
+        }.compact.all?
       end
 
       def callbacks_for(action, kind: :before)
@@ -178,10 +178,10 @@ module Audited
           except: :records_changes_to_specified_fields?,
           comment_required: :comment_required_valid?,
           associated_with: :associated_with_model?,
-          on: :only_audit_on_designated_callbacks?
-        }.map do |(option, check)|
+          on: :only_audit_on_designated_callbacks?,
+        }.map { |(option, check)|
           send(check) if @options[option].present?
-        end.compact.all?
+        }.compact.all?
       end
     end
 
@@ -200,7 +200,7 @@ module Audited
         "Expected #{model_class} to not have associated audits"
       end
 
-      alias_method :failure_message_when_negated, :negative_failure_message
+      alias failure_message_when_negated negative_failure_message
 
       def description
         "has associated audits"

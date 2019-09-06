@@ -1,4 +1,4 @@
-require 'active_record'
+require "active_record"
 
 module Audited
   class << self
@@ -18,15 +18,15 @@ module Audited
     end
   end
 
-  @ignored_attributes = %w(lock_version created_at updated_at created_on updated_on)
+  @ignored_attributes = %w[lock_version created_at updated_at created_on updated_on]
 
   @current_user_method = :current_user
   @auditing_enabled = true
 end
 
-require 'audited/auditor'
-require 'audited/audit'
+require "audited/auditor"
+require "audited/audit"
 
 ::ActiveRecord::Base.send :include, Audited::Auditor
 
-require 'audited/sweeper'
+require "audited/sweeper"

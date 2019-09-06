@@ -3,14 +3,14 @@ module Audited
     STORED_DATA = {
       current_remote_address: :remote_ip,
       current_request_uuid: :request_uuid,
-      current_user: :current_user
+      current_user: :current_user,
     }
 
     delegate :store, to: ::Audited
 
     def around(controller)
       self.controller = controller
-      STORED_DATA.each { |k,m| store[k] = send(m) }
+      STORED_DATA.each { |k, m| store[k] = send(m) }
       yield
     ensure
       self.controller = nil
